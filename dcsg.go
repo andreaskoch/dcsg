@@ -45,7 +45,8 @@ func newDscg(dockerComposeFile, projectName string) (*dcsg, error) {
 		dockerComposeFileName: dockerComposeFileName,
 		projectName:           projectName,
 
-		installer: &systemdInstaller{systemdDirectory, commandExecutor},
+		installer:   &systemdInstaller{systemdDirectory, commandExecutor},
+		uninstaller: &systemdUninstaller{systemdDirectory, commandExecutor},
 	}, nil
 }
 
@@ -54,7 +55,8 @@ type dcsg struct {
 	dockerComposeFileName string
 	projectName           string
 
-	installer installer
+	installer   installer
+	uninstaller uninstaller
 }
 
 func (service dcsg) Install() error {
@@ -67,6 +69,11 @@ func (service dcsg) Install() error {
 }
 
 func (service dcsg) Uninstall() error {
+	err := service.uninstaller.Uninstall(service.projectDirectory, service.dockerComposeFileName, service.projectName)
+	if err != nil {
+		return errors.Wrap(err, "Uninstall failed")
+	}
+
 	return nil
 }
 
