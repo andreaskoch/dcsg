@@ -61,13 +61,13 @@ For the `uninstall` action **dcsg** remove the systemd service it created earlie
 
 You can download pre-built binaries for Linux (64bit, ARM 5, ARM 6 and ARM 7) from [github.com » andreaskoch » dcsg » releases](/releases/latest):
 
-- [Download for dcsg (Linux 64bit)](https://github.com/andreaskoch/dcsg/releases/download/v0.1.0-alpha/dcsg_linux_amd64)
-- [Download for dcsg (Linux ARM5)](https://github.com/andreaskoch/dcsg/releases/download/v0.1.0-alpha/dcsg_linux_arm5)
-- [Download for dcsg (Linux ARM6)](https://github.com/andreaskoch/dcsg/releases/download/v0.1.0-alpha/dcsg_linux_arm6)
-- [Download for dcsg (Linux ARM7)](https://github.com/andreaskoch/dcsg/releases/download/v0.1.0-alpha/dcsg_linux_arm7)
+- [Download for dcsg (Linux 64bit)](https://github.com/andreaskoch/dcsg/releases/download/v0.1.1-alpha/dcsg_linux_amd64)
+- [Download for dcsg (Linux ARM5)](https://github.com/andreaskoch/dcsg/releases/download/v0.1.1-alpha/dcsg_linux_arm5)
+- [Download for dcsg (Linux ARM6)](https://github.com/andreaskoch/dcsg/releases/download/v0.1.1-alpha/dcsg_linux_arm6)
+- [Download for dcsg (Linux ARM7)](https://github.com/andreaskoch/dcsg/releases/download/v0.1.1-alpha/dcsg_linux_arm7)
 
 ```bash
-curl -L https://github.com/andreaskoch/dcsg/releases/download/v0.1.0-alpha/dcsg_linux_amd64 > /usr/local/bin/dcsg
+curl -L https://github.com/andreaskoch/dcsg/releases/download/v0.1.1-alpha/dcsg_linux_amd64 > /usr/local/bin/dcsg
 chmod +x /usr/local/bin/dcsg
 ```
 

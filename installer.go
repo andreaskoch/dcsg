@@ -77,8 +77,9 @@ Description={{ .ProjectName }} Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .ProjectDirectory }}/{{ .DockerComposeFile }}" up
-ExecStop=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .ProjectDirectory }}/{{ .DockerComposeFile }}" down
+WorkingDirectory={{ .ProjectDirectory }}
+ExecStart=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" up
+ExecStop=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" down
 
 [Install]
 WantedBy=network-online.target
