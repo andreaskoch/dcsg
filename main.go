@@ -10,36 +10,32 @@ import (
 const applicationName = "dcsg"
 const applicationVersion = "v0.1.0-alpha"
 
+var (
+	app = kingpin.New(applicationName, fmt.Sprintf("%s creates systemd services for Docker Compose projects (%s)", applicationName, applicationVersion))
+
+	// install
+	installCommand           = app.Command("install", "Register a systemd service for the given docker-compose file")
+	installDockerComposeFile = installCommand.Arg("docker-compose-file", "A docker-compose file").Default("docker-compose.yml").String()
+	installProjectName       = installCommand.Arg("project-name", "The project name of the docker-compose project").String()
+
+	// uninstall
+	uninstallCommand           = app.Command("uninstall", "Uninstall the systemd service for the given docker-compose file")
+	uninstallDockerComposeFile = uninstallCommand.Arg("docker-compose-file", "A docker-compose file").Default("docker-compose.yml").String()
+	uinstallProjectName        = uninstallCommand.Arg("project-name", "The project name of the docker-compose project").String()
+)
+
+func init() {
+	app.Version(applicationVersion)
+	app.Author("Andreas Koch <andy@ak7.io>")
+}
+
 func main() {
 	handleCommandlineArgument(os.Args[1:])
 }
 
 func handleCommandlineArgument(arguments []string) {
 
-	app := kingpin.New(applicationName, fmt.Sprintf("%s creates systemd services for Docker Compose projects", applicationName))
-	app.Version(applicationVersion)
-	app.Writer(os.Stderr)
-	app.Terminate(func(int) {
-		return
-	})
-
-	// install
-	installCommand := app.Command("install", "Register a systemd service for the given docker-compose file")
-	installDockerComposeFile := installCommand.Arg("f", "A docker-compose file").Default("docker-compose.yml").String()
-	installProjectName := installCommand.Arg("p", "A project name for your docker-compose project").String()
-
-	// uninstall
-	uninstallCommand := app.Command("uninstall", "Uninstall the systemd service for the given docker-compose file")
-	uninstallDockerComposeFile := uninstallCommand.Arg("f", "A docker-compose file").Default("docker-compose.yml").String()
-	uinstallProjectName := uninstallCommand.Arg("p", "A project name for your docker-compose project").String()
-
-	command, err := app.Parse(arguments)
-	if err != nil {
-		app.Fatalf("%s", err.Error())
-		return
-	}
-
-	switch command {
+	switch kingpin.MustParse(app.Parse(arguments)) {
 
 	case installCommand.FullCommand():
 		service, err := newDscg(*installDockerComposeFile, *installProjectName)
