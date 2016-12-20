@@ -6,6 +6,8 @@ If you have one or more docker compose projects running on your server you might
 
 And **dcsg** is here to help you with just that. Quickly create systemd services from docker-compose files.
 
+![Animation: Using dcsg on a docker-compose project](files/animation-dcsg-usage-example.gif)
+
 ## Usage
 
 `dcsg <action> [<path-to-a-docker-compose-file>] [<docker-compose-project-name]>`

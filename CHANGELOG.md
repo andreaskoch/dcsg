@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+- Add an animation illustrating the usage of dcsg
+
 ## [v0.1.1-alpha] - 2016-12-18
 
 Set the working directory for the systemd services
