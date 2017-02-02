@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v0.2.0]
+
+systemd service improvements (thanks to @hermsi1337)
+
+### Added
+- Add an animation illustrating the usage of dcsg
+
+### Changed
+- Pull the latest image before starting (see: dcsg/pull/2)
+- Stop the containers before removing them (see: dcsg/pull/2)
+
 ## [v0.1.1-alpha] - 2016-12-18
 
 Set the working directory for the systemd services
