@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Add an animation illustrating the usage of dcsg
 
+### Changed
+- Pull the latest image before starting (see: dcsg/pull/2)
+- Stop the containers before removing them (see: dcsg/pull/2)
+
 ## [v0.1.1-alpha] - 2016-12-18
 
 Set the working directory for the systemd services
