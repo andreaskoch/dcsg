@@ -77,6 +77,7 @@ Description={{ .ProjectName }} Service
 After=network.target
 
 [Service]
+TimeoutSec=300
 WorkingDirectory={{ .ProjectDirectory }}
 ExecStartPre=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" pull
 ExecStart=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" up
