@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v0.3.0] - 2017-03-11
+
+Timeouts and restart policy
+
+### Added
+- Add a startup timeout (see: dcsg#4)
+- Add restart-policy (see: dcsg#4)
+
 ## [v0.2.0]
 
 systemd service improvements (thanks to @hermsi1337)
