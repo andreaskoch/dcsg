@@ -78,7 +78,7 @@ After=docker.service
 Requires=docker.service
 
 [Service]
-Type=forking
+Type=notify
 Restart=always
 RestartSec=10
 TimeoutSec=300
