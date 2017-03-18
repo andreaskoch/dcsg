@@ -79,6 +79,7 @@ Requires=docker.service
 
 [Service]
 Type=notify
+NotifyAccess=all
 Restart=always
 RestartSec=10
 TimeoutSec=300
