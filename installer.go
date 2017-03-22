@@ -78,11 +78,6 @@ After=network.service docker.service
 Requires=docker.service
 
 [Service]
-<<<<<<< HEAD
-=======
-Type=notify
-NotifyAccess=all
->>>>>>> ebf28c735fd80eef73b84a1ecd57f81bc5063d39
 Restart=always
 RestartSec=10
 TimeoutSec=300
