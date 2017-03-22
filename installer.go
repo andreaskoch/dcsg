@@ -74,12 +74,15 @@ func getServiceName(projectName string) string {
 
 const serviceTemplate = `[Unit]
 Description={{ .ProjectName }} Service
-After=docker.service  
+After=network.service docker.service  
 Requires=docker.service
 
 [Service]
+<<<<<<< HEAD
+=======
 Type=notify
 NotifyAccess=all
+>>>>>>> ebf28c735fd80eef73b84a1ecd57f81bc5063d39
 Restart=always
 RestartSec=10
 TimeoutSec=300
@@ -90,7 +93,7 @@ ExecStop=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerCompo
 ExecStopPost=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" down
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=docker.service
 `
 
 type serviceDefinition struct {
