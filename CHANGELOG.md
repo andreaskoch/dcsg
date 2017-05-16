@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v0.4.0]
+
+Improved systemd reliability (thanks to @hermsi1337)
+
+### Changed
+- Change the application version to v0.3.0
+- Improve systemd-reliability (see: dcsg#6)
+
 ## [v0.3.0] - 2017-03-11
 
 Timeouts and restart policy
