@@ -8,7 +8,7 @@ import (
 )
 
 const applicationName = "dcsg"
-const applicationVersion = "v0.3.0"
+const applicationVersion = "v0.4.0"
 
 var (
 	app = kingpin.New(applicationName, fmt.Sprintf("%s creates systemd services for Docker Compose projects (%s)", applicationName, applicationVersion))
