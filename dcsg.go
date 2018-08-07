@@ -10,8 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func newDscg(dockerComposeFile, projectName string, dryRun bool) (*dcsg, error) {
-
+func newDscg(dockerComposeFile, projectName string, dryRun bool, doPull bool) (*dcsg, error) {
 	cleanedFilePath, err := filepath.Abs(dockerComposeFile)
 	if err != nil {
 		return nil, err
@@ -45,7 +44,7 @@ func newDscg(dockerComposeFile, projectName string, dryRun bool) (*dcsg, error) 
 		dockerComposeFileName: dockerComposeFileName,
 		projectName:           projectName,
 
-		installer:   &systemdInstaller{systemdDirectory, commandExecutor, dryRun},
+		installer:   &systemdInstaller{systemdDirectory, commandExecutor, dryRun, doPull},
 		uninstaller: &systemdUninstaller{systemdDirectory, commandExecutor, dryRun},
 	}, nil
 }
