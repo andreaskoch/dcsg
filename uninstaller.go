@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -15,6 +16,7 @@ type uninstaller interface {
 type systemdUninstaller struct {
 	systemdDirectory string
 	commandExecutor  Executor
+	dryRun           bool
 }
 
 func (uninstaller *systemdUninstaller) Uninstall(projectDirectory, dockerComposeFileName, projectName string) error {
@@ -36,7 +38,7 @@ func (uninstaller *systemdUninstaller) Uninstall(projectDirectory, dockerCompose
 		return errors.Wrap(disableError, fmt.Sprintf("Failed to disable %q", serviceName))
 	}
 
-	removeError := removeSystemdService(serviceViewModel, uninstaller.systemdDirectory)
+	removeError := uninstaller.removeSystemdService(serviceViewModel)
 	if removeError != nil {
 		return errors.Wrap(removeError, fmt.Sprintf("Failed to remove the systemd service %q", serviceViewModel.ProjectName))
 	}
@@ -49,11 +51,16 @@ func (uninstaller *systemdUninstaller) Uninstall(projectDirectory, dockerCompose
 	return nil
 }
 
-func removeSystemdService(service serviceDefinition, targetDirectory string) error {
-	serviceFilePath := filepath.Join(targetDirectory, getServiceName(service.ProjectName))
-	removeError := os.Remove(serviceFilePath)
-	if removeError != nil {
-		return errors.Wrap(removeError, fmt.Sprintf("Failed to remove %q", serviceFilePath))
+func (uninstaller *systemdUninstaller) removeSystemdService(service serviceDefinition) error {
+	serviceFilePath := filepath.Join(uninstaller.systemdDirectory, getServiceName(service.ProjectName))
+
+	if uninstaller.dryRun {
+		log.Println("Would remove file:", serviceFilePath)
+	} else {
+		removeError := os.Remove(serviceFilePath)
+		if removeError != nil {
+			return errors.Wrap(removeError, fmt.Sprintf("Failed to remove %q", serviceFilePath))
+		}
 	}
 
 	return nil
