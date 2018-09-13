@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -16,6 +17,7 @@ type installer interface {
 type systemdInstaller struct {
 	systemdDirectory string
 	commandExecutor  Executor
+	dryRun           bool
 }
 
 func (installer *systemdInstaller) Install(projectDirectory, dockerComposeFileName, projectName string) error {
@@ -27,7 +29,7 @@ func (installer *systemdInstaller) Install(projectDirectory, dockerComposeFileNa
 		DockerComposeFile: dockerComposeFileName,
 	}
 
-	if err := createSystemdService(serviceViewModel, installer.systemdDirectory); err != nil {
+	if err := installer.createSystemdService(serviceViewModel); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("Failed to create a systemd service for project %q (Directory: %q, Docker Compose File: %q)", projectName, projectDirectory, dockerComposeFileName))
 	}
 
@@ -49,14 +51,22 @@ func (installer *systemdInstaller) Install(projectDirectory, dockerComposeFileNa
 	return nil
 }
 
-func createSystemdService(service serviceDefinition, targetDirectory string) error {
-	serviceFilePath := filepath.Join(targetDirectory, getServiceName(service.ProjectName))
-	file, err := os.OpenFile(serviceFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0664)
-	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("Failed to open the systemd service file: %q", serviceFilePath))
-	}
+func (installer *systemdInstaller) createSystemdService(service serviceDefinition) error {
+	serviceFilePath := filepath.Join(installer.systemdDirectory, getServiceName(service.ProjectName))
 
-	defer file.Close()
+	var file *os.File
+	if installer.dryRun {
+		log.Println("Installing this service file at:", serviceFilePath)
+		file = os.Stdout
+	} else {
+		var err error
+
+		file, err = os.OpenFile(serviceFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0664)
+		if err != nil {
+			return errors.Wrap(err, fmt.Sprintf("Failed to open the systemd service file: %q", serviceFilePath))
+		}
+		defer file.Close()
+	}
 
 	serviceTemplate, err := template.New("systemdservice").Parse(serviceTemplate)
 	if err != nil {
@@ -74,7 +84,7 @@ func getServiceName(projectName string) string {
 
 const serviceTemplate = `[Unit]
 Description={{ .ProjectName }} Service
-After=network.service docker.service  
+After=network.service docker.service
 Requires=docker.service
 
 [Service]

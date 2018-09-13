@@ -7,8 +7,14 @@ import (
 	"testing"
 )
 
-func Test_createSystemdService_NoErrorIsReturned(t *testing.T) {
+func getTestInstaller() *systemdInstaller {
 	targetDirectory := os.TempDir()
+	commandExecutor := newExecutor(os.Stdin, os.Stdout, os.Stderr, "", false)
+	return &systemdInstaller{targetDirectory, commandExecutor, false}
+}
+
+func Test_createSystemdService_NoErrorIsReturned(t *testing.T) {
+	installer := getTestInstaller()
 
 	serviceViewModel := serviceDefinition{
 		ProjectName:       "exampleproject",
@@ -16,7 +22,7 @@ func Test_createSystemdService_NoErrorIsReturned(t *testing.T) {
 		DockerComposeFile: "docker-compose.yml",
 	}
 
-	result := createSystemdService(serviceViewModel, targetDirectory)
+	result := installer.createSystemdService(serviceViewModel)
 
 	if result != nil {
 		t.Fail()
@@ -25,7 +31,7 @@ func Test_createSystemdService_NoErrorIsReturned(t *testing.T) {
 }
 
 func Test_createSystemdService_ServiceFileIsWritten(t *testing.T) {
-	targetDirectory := os.TempDir()
+	installer := getTestInstaller()
 
 	serviceViewModel := serviceDefinition{
 		ProjectName:       "exampleproject",
@@ -33,14 +39,14 @@ func Test_createSystemdService_ServiceFileIsWritten(t *testing.T) {
 		DockerComposeFile: "docker-compose.yml",
 	}
 
-	result := createSystemdService(serviceViewModel, targetDirectory)
+	result := installer.createSystemdService(serviceViewModel)
 
 	if result != nil {
 		t.Fail()
 		t.Logf("createSystemdService returned %s", result)
 	}
 
-	targetFilePath := filepath.Join(targetDirectory, fmt.Sprintf("%s.service", serviceViewModel.ProjectName))
+	targetFilePath := filepath.Join(installer.systemdDirectory, fmt.Sprintf("%s.service", serviceViewModel.ProjectName))
 	_, err := os.Stat(targetFilePath)
 	if err != nil {
 		t.Fail()

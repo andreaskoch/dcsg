@@ -11,7 +11,8 @@ const applicationName = "dcsg"
 const applicationVersion = "v0.4.0"
 
 var (
-	app = kingpin.New(applicationName, fmt.Sprintf("%s creates systemd services for Docker Compose projects (%s)", applicationName, applicationVersion))
+	app       = kingpin.New(applicationName, fmt.Sprintf("%s creates systemd services for Docker Compose projects (%s)", applicationName, applicationVersion))
+	appDryRun = app.Flag("dry-run", "Print details of what would be done but do not install anything").Short('n').Bool()
 
 	// install
 	installCommand           = app.Command("install", "Register a systemd service for the given docker-compose file")
@@ -38,7 +39,7 @@ func handleCommandlineArgument(arguments []string) {
 	switch kingpin.MustParse(app.Parse(arguments)) {
 
 	case installCommand.FullCommand():
-		service, err := newDscg(*installDockerComposeFile, *installProjectName)
+		service, err := newDscg(*installDockerComposeFile, *installProjectName, *appDryRun)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
@@ -50,7 +51,7 @@ func handleCommandlineArgument(arguments []string) {
 		}
 
 	case uninstallCommand.FullCommand():
-		service, err := newDscg(*uninstallDockerComposeFile, *uinstallProjectName)
+		service, err := newDscg(*uninstallDockerComposeFile, *uinstallProjectName, *appDryRun)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)

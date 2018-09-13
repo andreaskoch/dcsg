@@ -14,13 +14,14 @@ type Executor interface {
 	Run(command ...string) error
 }
 
-func newExecutor(in io.Reader, out io.Writer, err io.Writer, baseDirectory string) Executor {
+func newExecutor(in io.Reader, out, err io.Writer, baseDirectory string, dryRun bool) Executor {
 	return &CommandExecutor{
 		in:  in,
 		out: out,
 		err: err,
 
 		baseDirectory: baseDirectory,
+		dryRun:        dryRun,
 	}
 }
 
@@ -30,6 +31,7 @@ type CommandExecutor struct {
 	err io.Writer
 
 	baseDirectory string
+	dryRun        bool
 }
 
 func (executor *CommandExecutor) InDirectory(directory string) CommandExecutor {
@@ -43,6 +45,7 @@ func (executor *CommandExecutor) InDirectory(directory string) CommandExecutor {
 		err: executor.err,
 
 		baseDirectory: expandedWorkingDirectory,
+		dryRun:        executor.dryRun,
 	}
 }
 
@@ -71,10 +74,12 @@ func (executor *CommandExecutor) Run(command ...string) error {
 
 	log.Printf("%s: %s %s", expandedWorkingDirectory, command[0], strings.Join(command[1:], " "))
 
-	err := cmd.Run()
-	if err != nil {
-		log.Printf("Error running %s: %v", command, err)
-		return err
+	if !executor.dryRun {
+		err := cmd.Run()
+		if err != nil {
+			log.Printf("Error running %s: %v", command, err)
+			return err
+		}
 	}
 
 	return nil
