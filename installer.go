@@ -18,6 +18,7 @@ type systemdInstaller struct {
 	systemdDirectory string
 	commandExecutor  Executor
 	dryRun           bool
+	doPull           bool
 }
 
 func (installer *systemdInstaller) Install(projectDirectory, dockerComposeFileName, projectName string) error {
@@ -27,6 +28,7 @@ func (installer *systemdInstaller) Install(projectDirectory, dockerComposeFileNa
 		ProjectName:       projectName,
 		ProjectDirectory:  projectDirectory,
 		DockerComposeFile: dockerComposeFileName,
+		DoPull:            installer.doPull,
 	}
 
 	if err := installer.createSystemdService(serviceViewModel); err != nil {
@@ -92,7 +94,9 @@ Restart=always
 RestartSec=10
 TimeoutSec=300
 WorkingDirectory={{ .ProjectDirectory }}
+{{- if .DoPull }}
 ExecStartPre=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" pull
+{{- end }}
 ExecStart=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" up
 ExecStop=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" stop
 ExecStopPost=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" down
@@ -105,4 +109,5 @@ type serviceDefinition struct {
 	ProjectName       string
 	ProjectDirectory  string
 	DockerComposeFile string
+	DoPull            bool
 }

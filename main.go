@@ -18,6 +18,7 @@ var (
 	installCommand           = app.Command("install", "Register a systemd service for the given docker-compose file")
 	installDockerComposeFile = installCommand.Arg("docker-compose-file", "A docker-compose file").Default("docker-compose.yml").String()
 	installProjectName       = installCommand.Arg("project-name", "The project name of the docker-compose project").String()
+	installDontPull          = installCommand.Flag("no-pull", "The project name of the docker-compose project").Bool()
 
 	// uninstall
 	uninstallCommand           = app.Command("uninstall", "Uninstall the systemd service for the given docker-compose file")
@@ -35,11 +36,10 @@ func main() {
 }
 
 func handleCommandlineArgument(arguments []string) {
-
 	switch kingpin.MustParse(app.Parse(arguments)) {
 
 	case installCommand.FullCommand():
-		service, err := newDscg(*installDockerComposeFile, *installProjectName, *appDryRun)
+		service, err := newDscg(*installDockerComposeFile, *installProjectName, *appDryRun, !(*installDontPull))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
@@ -51,7 +51,7 @@ func handleCommandlineArgument(arguments []string) {
 		}
 
 	case uninstallCommand.FullCommand():
-		service, err := newDscg(*uninstallDockerComposeFile, *uinstallProjectName, *appDryRun)
+		service, err := newDscg(*uninstallDockerComposeFile, *uinstallProjectName, *appDryRun, !(*installDontPull))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
@@ -61,7 +61,5 @@ func handleCommandlineArgument(arguments []string) {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
 		}
-
 	}
-
 }
