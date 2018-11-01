@@ -27,10 +27,6 @@ func newDscg(dockerComposeFile string, dockerComposeExtensionFiles []string, pro
 	}
 
 	dockerComposeFileName := filepath.Base(dockerComposeFile)
-	var dockerComposeExtensionFileNames []string
-	for _, f := range dockerComposeExtensionFiles {
-		dockerComposeExtensionFileNames = append(dockerComposeExtensionFileNames, filepath.Base(f))
-	}
 
 	systemdDirectory := "/etc/systemd/system"
 	commandExecutor := newExecutor(os.Stdin, os.Stdout, os.Stderr, "", dryRun)
@@ -38,7 +34,7 @@ func newDscg(dockerComposeFile string, dockerComposeExtensionFiles []string, pro
 	return &dcsg{
 		projectDirectory:                projectDirectory,
 		dockerComposeFileName:           dockerComposeFileName,
-		dockerComposeExtensionFileNames: dockerComposeExtensionFileNames,
+		dockerComposeExtensionFileNames: dockerComposeExtensionFiles,
 		projectName:                     projectName,
 
 		installer:   &systemdInstaller{systemdDirectory, commandExecutor, dryRun, doPull},
