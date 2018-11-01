@@ -96,11 +96,11 @@ RestartSec=10
 TimeoutSec=300
 WorkingDirectory={{ .ProjectDirectory }}
 {{- if .DoPull }}
-ExecStartPre=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" {{- range .DockerComposeExtensionFiles }} -f {{ . -}} {{ end -}} pull
+ExecStartPre=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" {{- range .DockerComposeExtensionFiles }} -f {{ . -}} {{ end }} pull
 {{- end }}
-ExecStart=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" {{- range .DockerComposeExtensionFiles }} -f {{ . -}} {{ end -}} up
-ExecStop=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" {{- range .DockerComposeExtensionFiles }} -f {{ . -}} {{ end -}} stop
-ExecStopPost=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" {{- range .DockerComposeExtensionFiles }} -f {{ . -}} {{ end -}} down
+ExecStart=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" {{- range .DockerComposeExtensionFiles }} -f {{ . -}} {{ end }} up
+ExecStop=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" {{- range .DockerComposeExtensionFiles }} -f {{ . -}} {{ end }} stop
+ExecStopPost=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" {{- range .DockerComposeExtensionFiles }} -f {{ . -}} {{ end }} down
 
 [Install]
 WantedBy=docker.service
