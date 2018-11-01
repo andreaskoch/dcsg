@@ -11,7 +11,7 @@ import (
 )
 
 type installer interface {
-	Install(projectDirectory, dockerComposeFileName, projectName string) error
+	Install(projectDirectory string, dockerComposeFileName string, dockerComposeExtensionFileNames []string, projectName string) error
 }
 
 type systemdInstaller struct {
@@ -21,14 +21,15 @@ type systemdInstaller struct {
 	doPull           bool
 }
 
-func (installer *systemdInstaller) Install(projectDirectory, dockerComposeFileName, projectName string) error {
+func (installer *systemdInstaller) Install(projectDirectory string, dockerComposeFileName string, dockerComposeExtensionFileNames []string, projectName string) error {
 
 	serviceName := getServiceName(projectName)
 	serviceViewModel := serviceDefinition{
-		ProjectName:       projectName,
-		ProjectDirectory:  projectDirectory,
-		DockerComposeFile: dockerComposeFileName,
-		DoPull:            installer.doPull,
+		ProjectName:                 projectName,
+		ProjectDirectory:            projectDirectory,
+		DockerComposeFile:           dockerComposeFileName,
+		DockerComposeExtensionFiles: dockerComposeExtensionFileNames,
+		DoPull:                      installer.doPull,
 	}
 
 	if err := installer.createSystemdService(serviceViewModel); err != nil {
@@ -95,19 +96,20 @@ RestartSec=10
 TimeoutSec=300
 WorkingDirectory={{ .ProjectDirectory }}
 {{- if .DoPull }}
-ExecStartPre=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" pull
+ExecStartPre=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" {{ range .DockerComposeExtensionFiles }} -f {{ . }} {{ end }} pull
 {{- end }}
-ExecStart=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" up
-ExecStop=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" stop
-ExecStopPost=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" down
+ExecStart=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" {{ range .DockerComposeExtensionFiles }} -f {{ . }} {{ end }} up
+ExecStop=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" {{ range .DockerComposeExtensionFiles }} -f {{ . }} {{ end }} stop
+ExecStopPost=/usr/bin/env docker-compose -p "{{ .ProjectName }}" -f "{{ .DockerComposeFile }}" {{ range .DockerComposeExtensionFiles }} -f {{ . }} {{ end }} down
 
 [Install]
 WantedBy=docker.service
 `
 
 type serviceDefinition struct {
-	ProjectName       string
-	ProjectDirectory  string
-	DockerComposeFile string
-	DoPull            bool
+	ProjectName                 string
+	ProjectDirectory            string
+	DockerComposeFile           string
+	DockerComposeExtensionFiles []string
+	DoPull                      bool
 }
