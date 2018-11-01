@@ -10,16 +10,17 @@ import (
 func getTestInstaller() *systemdInstaller {
 	targetDirectory := os.TempDir()
 	commandExecutor := newExecutor(os.Stdin, os.Stdout, os.Stderr, "", false)
-	return &systemdInstaller{targetDirectory, commandExecutor, false}
+	return &systemdInstaller{targetDirectory, commandExecutor, false, false}
 }
 
 func Test_createSystemdService_NoErrorIsReturned(t *testing.T) {
 	installer := getTestInstaller()
 
 	serviceViewModel := serviceDefinition{
-		ProjectName:       "exampleproject",
-		ProjectDirectory:  "/var/www/example-project",
-		DockerComposeFile: "docker-compose.yml",
+		ProjectName:                 "exampleproject",
+		ProjectDirectory:            "/var/www/example-project",
+		DockerComposeFile:           "docker-compose.yml",
+		DockerComposeExtensionFiles: []string{"override.yml"},
 	}
 
 	result := installer.createSystemdService(serviceViewModel)
@@ -34,9 +35,10 @@ func Test_createSystemdService_ServiceFileIsWritten(t *testing.T) {
 	installer := getTestInstaller()
 
 	serviceViewModel := serviceDefinition{
-		ProjectName:       "exampleproject",
-		ProjectDirectory:  "/var/www/example-project",
-		DockerComposeFile: "docker-compose.yml",
+		ProjectName:                 "exampleproject",
+		ProjectDirectory:            "/var/www/example-project",
+		DockerComposeFile:           "docker-compose.yml",
+		DockerComposeExtensionFiles: []string{"override.yml"},
 	}
 
 	result := installer.createSystemdService(serviceViewModel)
