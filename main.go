@@ -16,15 +16,15 @@ var (
 
 	// install
 	installCommand                     = app.Command("install", "Register a systemd service for the given docker-compose file")
-	installDockerComposeFile           = installCommand.Flag("docker-compose-file", "A docker-compose file").Default("docker-compose.yml").ExistingFile()
-	installDockerComposeExtensionFiles = installCommand.Flag("extend-docker-compose", "A docker-compose file").Default("docker-compose.yml").ExistingFiles()
-	installProjectName                 = installCommand.Flag("project-name", "The project name of the docker-compose project").String()
-	installDontPull                    = installCommand.Flag("no-pull", "The project name of the docker-compose project").Default("false").Bool()
+	installDockerComposeFile           = installCommand.Arg("docker-compose-file", "A docker-compose file").Default("docker-compose.yml").String()
+	installDockerComposeExtensionFiles = installCommand.Flag("extend-compose", "Additional docker-compose files").Short('e').Default("docker-compose.yml").ExistingFiles()
+	installProjectName                 = installCommand.Arg("project-name", "The project name of the docker-compose project").String()
+	installDontPull                    = installCommand.Flag("no-pull", "Whether you want to pull the image before startup or not").Default("false").Bool()
 
 	// uninstall
 	uninstallCommand           = app.Command("uninstall", "Uninstall the systemd service for the given docker-compose file")
-	uninstallDockerComposeFile = uninstallCommand.Flag("docker-compose-file", "A docker-compose file").Default("docker-compose.yml").ExistingFile()
-	uninstallProjectName       = uninstallCommand.Flag("project-name", "The project name of the docker-compose project").String()
+	uninstallDockerComposeFile = uninstallCommand.Arg("docker-compose-file", "A docker-compose file").Default("docker-compose.yml").String()
+	uninstallProjectName       = uninstallCommand.Arg("project-name", "The project name of the docker-compose project").String()
 )
 
 func init() {
