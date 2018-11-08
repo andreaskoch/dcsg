@@ -16,9 +16,9 @@ var (
 
 	// install
 	installCommand                     = app.Command("install", "Register a systemd service for the given docker-compose file")
-	installDockerComposeFile           = installCommand.Arg("docker-compose-file", "A docker-compose file").ExistingFile()
-	installDockerComposeExtensionFiles = installCommand.Flag("extend-compose", "Additional docker-compose file (one file per flag)").Short('e').ExistingFiles()
 	installProjectName                 = installCommand.Arg("project-name", "The project name of the docker-compose project").String()
+	installDockerComposeFile           = installCommand.Arg("docker-compose-file", "A docker-compose file").ExistingFile()
+	installDockerComposeExtensionFiles = installCommand.Arg("additional-docker-compose-yamls", "Additional docker-compose files").ExistingFiles()
 	installDontPull                    = installCommand.Flag("no-pull", "Whether you want to pull the image before startup or not").Default("false").Bool()
 
 	// uninstall
