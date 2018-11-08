@@ -10,15 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func newDscg(dockerComposeFile, projectName string, dryRun bool, doPull bool) (*dcsg, error) {
-	cleanedFilePath, err := filepath.Abs(dockerComposeFile)
-	if err != nil {
-		return nil, err
-	}
-
-	if !fileExists(cleanedFilePath) {
-		return nil, fmt.Errorf("The Docker Compose file %q does not exist", cleanedFilePath)
-	}
+func newDscg(dockerComposeFile string, dockerComposeExtensionFiles []string, projectName string, dryRun bool, doPull bool) (*dcsg, error) {
 
 	if projectName == "" {
 		projectNameFromDirectory, projectNameError := getProjectName(dockerComposeFile)
@@ -40,9 +32,10 @@ func newDscg(dockerComposeFile, projectName string, dryRun bool, doPull bool) (*
 	commandExecutor := newExecutor(os.Stdin, os.Stdout, os.Stderr, "", dryRun)
 
 	return &dcsg{
-		projectDirectory:      projectDirectory,
-		dockerComposeFileName: dockerComposeFileName,
-		projectName:           projectName,
+		projectDirectory:                projectDirectory,
+		dockerComposeFileName:           dockerComposeFileName,
+		dockerComposeExtensionFileNames: dockerComposeExtensionFiles,
+		projectName:                     projectName,
 
 		installer:   &systemdInstaller{systemdDirectory, commandExecutor, dryRun, doPull},
 		uninstaller: &systemdUninstaller{systemdDirectory, commandExecutor, dryRun},
@@ -50,16 +43,17 @@ func newDscg(dockerComposeFile, projectName string, dryRun bool, doPull bool) (*
 }
 
 type dcsg struct {
-	projectDirectory      string
-	dockerComposeFileName string
-	projectName           string
+	projectDirectory                string
+	dockerComposeFileName           string
+	dockerComposeExtensionFileNames []string
+	projectName                     string
 
 	installer   installer
 	uninstaller uninstaller
 }
 
 func (service dcsg) Install() error {
-	err := service.installer.Install(service.projectDirectory, service.dockerComposeFileName, service.projectName)
+	err := service.installer.Install(service.projectDirectory, service.dockerComposeFileName, service.dockerComposeExtensionFileNames, service.projectName)
 	if err != nil {
 		return errors.Wrap(err, "Installation failed")
 	}
@@ -86,15 +80,6 @@ func getProjectDirectory(dockerComposeFile string) (string, error) {
 }
 
 var invalidProjectNameCharacters = regexp.MustCompile("[^a-z0-9]")
-
-func fileExists(filePath string) bool {
-	_, err := os.Stat(filePath)
-	if err != nil {
-		return false
-	}
-
-	return true
-}
 
 func getProjectName(dockerComposeFile string) (string, error) {
 	directoryPath, err := getProjectDirectory(dockerComposeFile)

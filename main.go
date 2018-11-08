@@ -15,15 +15,16 @@ var (
 	appDryRun = app.Flag("dry-run", "Print details of what would be done but do not install anything").Short('n').Bool()
 
 	// install
-	installCommand           = app.Command("install", "Register a systemd service for the given docker-compose file")
-	installDockerComposeFile = installCommand.Arg("docker-compose-file", "A docker-compose file").Default("docker-compose.yml").String()
-	installProjectName       = installCommand.Arg("project-name", "The project name of the docker-compose project").String()
-	installDontPull          = installCommand.Flag("no-pull", "The project name of the docker-compose project").Bool()
+	installCommand                     = app.Command("install", "Register a systemd service for the given docker-compose file")
+	installProjectName                 = installCommand.Arg("project-name", "The project name of the docker-compose project").String()
+	installDockerComposeFile           = installCommand.Arg("docker-compose-file", "A docker-compose file").ExistingFile()
+	installDockerComposeExtensionFiles = installCommand.Arg("additional-docker-compose-yamls", "Additional docker-compose files").ExistingFiles()
+	installDontPull                    = installCommand.Flag("no-pull", "Whether you want to pull the image before startup or not").Default("false").Bool()
 
 	// uninstall
 	uninstallCommand           = app.Command("uninstall", "Uninstall the systemd service for the given docker-compose file")
 	uninstallDockerComposeFile = uninstallCommand.Arg("docker-compose-file", "A docker-compose file").Default("docker-compose.yml").String()
-	uinstallProjectName        = uninstallCommand.Arg("project-name", "The project name of the docker-compose project").String()
+	uninstallProjectName       = uninstallCommand.Arg("project-name", "The project name of the docker-compose project").String()
 )
 
 func init() {
@@ -39,7 +40,7 @@ func handleCommandlineArgument(arguments []string) {
 	switch kingpin.MustParse(app.Parse(arguments)) {
 
 	case installCommand.FullCommand():
-		service, err := newDscg(*installDockerComposeFile, *installProjectName, *appDryRun, !(*installDontPull))
+		service, err := newDscg(*installDockerComposeFile, *installDockerComposeExtensionFiles, *installProjectName, *appDryRun, !(*installDontPull))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
@@ -51,7 +52,7 @@ func handleCommandlineArgument(arguments []string) {
 		}
 
 	case uninstallCommand.FullCommand():
-		service, err := newDscg(*uninstallDockerComposeFile, *uinstallProjectName, *appDryRun, !(*installDontPull))
+		service, err := newDscg(*uninstallDockerComposeFile, *installDockerComposeExtensionFiles, *uninstallProjectName, *appDryRun, !(*installDontPull))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
